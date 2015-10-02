@@ -41,20 +41,36 @@ def permutation_has_been_seen(n , already_seen):
     return any(i in already_seen for i in int_permutations(n))
 
 
+def keep_prime(l):
+    """Return a list keeping only prime numbers"""
+
+    permutations = np.array(sorted(int_permutations(n))) #sorted list of all permutations
+    is_prime_number = np.array([is_prime(m) for m in permutations])
+    return permutations[is_prime_number]
+
+
+def difference_elements(t):
+    """Return the difference between the list elements"""
+    return [j-i for i, j in zip(t[:-1], t[1:])]
+
+
 
 
 
 already_seen = [] #list out already encountered digit combination (for pure optimization)
 for n in xrange(1000,10000):
 
-    if permutation_has_been_seen(n, already_seen) or not unique_digit(n):
+    if permutation_has_been_seen(n, already_seen) or not unique_digit(n) or not is_prime(n):
         continue
-
     else:
-        already_seen.append(n)
-        permutations = int_permutations(n)
-        
+        already_seen.append(n) #update combination that have been seen
+        permutations = keep_prime(int_permutations(n))
+        if len(permutations) < 3:
+            continue
+        else:
+            print n, permutations
 
+        
 
 
 
