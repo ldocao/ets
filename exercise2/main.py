@@ -2,7 +2,7 @@ from prime_number import is_prime
 import itertools
 import numpy as np
 import ipdb
-
+from scipy.spatial.distance import pdist
 
 
 
@@ -19,7 +19,6 @@ def unique_digit(n):
     return result
 
 
-
 def int_permutations(n, ndigits=4):
     """Return a list of all permutations as int of 4 digits"""
     list_numbers = map(int, str(n)) #get list of digits
@@ -33,7 +32,6 @@ def contains_non_prime(l):
     """Check if the list contains non prime number"""
     non_primality = [np.logical_not(is_prime(i)) for i in l]
     return np.sum(non_primality) >= 1
-
 
 
 def permutation_has_been_seen(n , already_seen):
@@ -54,20 +52,27 @@ def difference_elements(t):
     return [j-i for i, j in zip(t[:-1], t[1:])]
 
 
+def difference_matrix(X):
+    """Compute a symmetric matrix of the difference between each elements"""
+    d = [[x] for x in X]
+    return pdist(d)
+
+
 
 
 
 already_seen = [] #list out already encountered digit combination (for pure optimization)
 for n in xrange(1000,10000):
-
     if permutation_has_been_seen(n, already_seen) or not unique_digit(n) or not is_prime(n):
         continue
     else:
         already_seen.append(n) #update combination that have been seen
         permutations = keep_prime(int_permutations(n))
-        if len(permutations) < 3:
+        if len(permutations) < 3: #reject if number of combinations is too low
             continue
         else:
+            distances = difference_matrix(permutations)
+            _ , occurences = np.unique(distances, return_counts=True)
             print n, permutations
 
         
