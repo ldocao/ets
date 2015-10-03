@@ -2,7 +2,7 @@ from prime_number import is_prime
 import itertools
 import numpy as np
 import ipdb
-from scipy.spatial.distance import pdist
+from scipy.spatial.distance import pdist, squareform
 
 
 
@@ -52,28 +52,59 @@ def difference_elements(t):
     return [j-i for i, j in zip(t[:-1], t[1:])]
 
 
-def difference_matrix(X):
+def distance_matrix(X):
     """Compute a symmetric matrix of the difference between each elements"""
     d = [[x] for x in X]
-    return pdist(d)
+    condensed = pdist(d)
+    return squareform(condensed)
+
+
+def central_point(distances):
+    """Return the index of an equidistant point, and the distance
+
+    Parameters:
+    ----------
+    distances: np.array
+        square matrix of distances between all permutations
+
+    Output:
+    ------
+    c : int
+        index in distances matrix of the central point
+
+    distance: int
+        distance of separation
+    """
+
+    size_distances = np.shape(distances)[0]
+    for c in range(size_distances):
+        unique_distances, occurences = np.unique(distances[:,c], return_counts=True)
+        is_equidistant = np.array(occurences) == 2 #check if the point is equidistant between two other numbers
+        if any(is_equidistant):
+            return c, unique_distances[is_equidistant]
+
+    return -1, 0 #default return
 
 
 
 
 
-already_seen = [] #list out already encountered digit combination (for pure optimization)
-for n in xrange(1000,10000):
-    if permutation_has_been_seen(n, already_seen) or not unique_digit(n) or not is_prime(n):
+ndigits = 4
+for n in xrange(10**(ndigits-1),10**ndigits):
+    if not unique_digit(n) or not is_prime(n):
         continue
     else:
-        already_seen.append(n) #update combination that have been seen
-        permutations = keep_prime(int_permutations(n))
+        permutations = keep_prime(int_permutations(n, ndigits)) #remove non prime numbers
         if len(permutations) < 3: #reject if number of combinations is too low
             continue
         else:
-            distances = difference_matrix(permutations)
-            _ , occurences = np.unique(distances, return_counts=True)
-            print n, permutations
+            distances = distance_matrix(permutations)
+            index, edist = central_point(distances)
+            if index == 2:
+                print n, index, edist
+
+
+            
 
         
 
