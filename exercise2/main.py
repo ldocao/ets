@@ -5,6 +5,10 @@ import ipdb
 from scipy.spatial.distance import pdist, squareform
 
 
+NO_MATCH = -1
+KNOWN_MATCH = [1487,4817,8147]
+SEPARATION = 3300
+
 
 
 def contains_duplicate(x):
@@ -42,7 +46,7 @@ def permutation_has_been_seen(n , already_seen):
 def keep_prime(l):
     """Return a list keeping only prime numbers"""
 
-    permutations = np.array(sorted(int_permutations(n))) #sorted list of all permutations
+    permutations = np.array(int_permutations(n)) #sorted list of all permutations
     is_prime_number = np.array([is_prime(m) for m in permutations])
     return permutations[is_prime_number]
 
@@ -83,7 +87,8 @@ def central_point(distances):
         if any(is_equidistant):
             return c, unique_distances[is_equidistant]
 
-    return -1, 0 #default return
+
+    return NO_MATCH, 0 #default return
 
 
 
@@ -100,7 +105,7 @@ for n in xrange(10**(ndigits-1),10**ndigits):
         else:
             distances = distance_matrix(permutations)
             index, edist = central_point(distances)
-            if index == 2:
+            if index != NO_MATCH and not n in KNOWN_MATCH:
                 print n, index, edist
 
 
