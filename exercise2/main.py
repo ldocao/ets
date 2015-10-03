@@ -4,7 +4,7 @@ import numpy as np
 import ipdb
 from scipy.spatial.distance import pdist, squareform
 
-
+NDIGITS = 4
 NO_MATCH = -1
 KNOWN_MATCH = [1487,4817,8147]
 SEPARATION = 3300
@@ -23,7 +23,7 @@ def unique_digit(n):
     return result
 
 
-def int_permutations(n, ndigits=4):
+def int_permutations(n, ndigits=NDIGITS):
     """Return a list of all permutations as int of 4 digits"""
     list_numbers = map(int, str(n)) #get list of digits
     permutations_tuple = itertools.permutations(list_numbers, ndigits)
@@ -94,7 +94,7 @@ def central_point(distances):
 
 
 
-ndigits = 4
+
 for n in xrange(10**(ndigits-1),10**ndigits):
     if not unique_digit(n) or not is_prime(n):
         continue
