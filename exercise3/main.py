@@ -38,9 +38,9 @@ df = load_dataset(csvfile)
 list_df = separate_diet(df)
 
 for diet in list_df:
-    mean_time = diet.mean(axis=1).plot()
+    mean_time = diet.mean(axis=1).plot(label="Diet"+str(np.unique(diet["Diet"])))
 
-
+plt.legend()
 plt.show()
 
 
