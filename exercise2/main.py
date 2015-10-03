@@ -107,15 +107,28 @@ def remove_known_matches(x):
 
 
 
+def triple_equidistant(permutations):
+    """Return an equidistant triple"""
+
+    distances = distance_matrix(permutations)
+    middle = np.array(permutations)[np.sum(distances == SEPARATION, axis=1) == 2]
+    left = middle - SEPARATION
+    right = middle + SEPARATION
+    return np.array([left, middle, right])
+
+
+
+
+
+
 for n in xrange(10**(NDIGITS-1),10**NDIGITS):
     permutations = keep_prime(int_permutations(n)) #remove non prime numbers among permutations
     permutations = remove_known_matches(list(permutations))
     if triple_exists(permutations):
-        ipdb.set_trace()
+        print triple_equidistant(permutations)
         break #as soon as I find one, I can exit
 
-results = 1
-print results
+
 
 
             
