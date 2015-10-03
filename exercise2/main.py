@@ -99,7 +99,8 @@ def check_distance_value(edist):
 
     return None
 
-def triple_equidistant(permutations):
+
+def triple_exists(permutations):
     """Return a triple of equidistant points among the list
 
     Parameters:
@@ -111,13 +112,9 @@ def triple_equidistant(permutations):
     distances = distance_matrix(permutations)
     icenter, edist = equidistant_point(distances)
     if icenter != NO_MATCH:
-        check_distance_value(edist)
-        center = permutations[icenter]
-        left = center - SEPARATION
-        right = center + SEPARATION
-        return left, center, right
+        return True
     else:
-        return NO_MATCH
+        return False
 
 
 
@@ -130,8 +127,25 @@ def range_values(x):
         return 0
 
 
+def remove_known_matches(x):
+    """Return the array after removing known matches
+
+    Parameters:
+    ----------
+    x: list
+    """
+    for k in KNOWN_MATCH:
+        try:
+            x.remove(k)
+        except ValueError:
+            pass
+
+    return x
+
+
+
 for n in xrange(10**(NDIGITS-1),10**NDIGITS):
-    if not unique_digit(n): #easy discard
+    if not unique_digit(n) or not is_prime(n): #easy discard
         continue
     else:
         permutations = keep_prime(int_permutations(n)) #remove non prime numbers among permutations
@@ -139,10 +153,9 @@ for n in xrange(10**(NDIGITS-1),10**NDIGITS):
         if len(permutations) < 3 or max_diff < SEPARATION*2:
             continue
         else:
-            distances = distance_matrix(permutations)
-            a,b = equidistant_point(distances)
-            if a != NO_MATCH:
-                print n,a,b
+            if triple_exists(permutations):
+                print n, permutations
+
             #results = triple_equidistant(permutations)
             #print n, permutations, results  
             #if results != NO_MATCH:
