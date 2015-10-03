@@ -11,16 +11,10 @@ SEPARATION = 3330
 
 
 
-def contains_duplicate(x):
-    """Check if two elements of a list are identical"""
-    return len(set(x)) != len(x)
 
 
-def unique_digit(n):
-    """Check if n contains unique digits"""
-    list_numbers = list(str(n))
-    result = False if contains_duplicate(list_numbers) else True
-    return result
+
+
 
 
 def int_permutations(n, ndigits=NDIGITS):
@@ -32,28 +26,12 @@ def int_permutations(n, ndigits=NDIGITS):
     return permutations
 
 
-def contains_non_prime(l):
-    """Check if the list contains non prime number"""
-    non_primality = [np.logical_not(is_prime(i)) for i in l]
-    return np.sum(non_primality) >= 1
-
-
-def permutation_has_been_seen(n , already_seen):
-    """Check if a permutation of n has been seen before"""
-    return any(i in already_seen for i in int_permutations(n))
-
-
 def keep_prime(l):
-    """Return a list keeping only prime numbers"""
+    """Return a list keeping only unique prime numbers"""
 
     permutations = np.array(int_permutations(n)) #sorted list of all permutations
     is_prime_number = np.array([is_prime(m) for m in permutations])
-    return permutations[is_prime_number]
-
-
-def difference_elements(t):
-    """Return the difference between the list elements"""
-    return [j-i for i, j in zip(t[:-1], t[1:])]
+    return np.unique(permutations[is_prime_number])
 
 
 def distance_matrix(X):
@@ -91,15 +69,6 @@ def equidistant_point(distances):
     return NO_MATCH, 0 #default return
 
 
-def check_distance_value(edist):
-    """Check if the distance is the expected value"""
-
-    if edist != SEPARATION: #check if the distance is the expected value
-        raise ValueError("Distance are supposed to be equal", edist, SEPARATION)
-
-    return None
-
-
 def triple_exists(permutations):
     """Return a triple of equidistant points among the list
 
@@ -109,6 +78,9 @@ def triple_exists(permutations):
         list of all permutations for a given set of digits
     """
 
+    if len(permutations) < 3:
+        return False
+
     distances = distance_matrix(permutations)
     icenter, edist = equidistant_point(distances)
     if icenter != NO_MATCH:
@@ -116,15 +88,6 @@ def triple_exists(permutations):
     else:
         return False
 
-
-
-def range_values(x):
-    """Return the range of values"""
-
-    try:
-        return np.max(permutations) - np.min(permutations)
-    except ValueError:
-        return 0
 
 
 def remove_known_matches(x):
@@ -145,23 +108,14 @@ def remove_known_matches(x):
 
 
 for n in xrange(10**(NDIGITS-1),10**NDIGITS):
-    if not unique_digit(n) or not is_prime(n): #easy discard
-        continue
-    else:
-        permutations = keep_prime(int_permutations(n)) #remove non prime numbers among permutations
-        max_diff = range_values(permutations)
-        if len(permutations) < 3 or max_diff < SEPARATION*2:
-            continue
-        else:
-            if triple_exists(permutations):
-                print n, permutations
+    permutations = keep_prime(int_permutations(n)) #remove non prime numbers among permutations
+    permutations = remove_known_matches(list(permutations))
+    if triple_exists(permutations):
+        ipdb.set_trace()
+        break #as soon as I find one, I can exit
 
-            #results = triple_equidistant(permutations)
-            #print n, permutations, results  
-            #if results != NO_MATCH:
-            #    print results
-
-
+results = 1
+print results
 
 
             
