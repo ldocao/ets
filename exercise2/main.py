@@ -7,7 +7,7 @@ from scipy.spatial.distance import pdist, squareform
 NDIGITS = 4
 NO_MATCH = -1
 KNOWN_MATCH = [1487,4817,8147]
-SEPARATION = 3300
+SEPARATION = 3330
 
 
 
@@ -63,7 +63,7 @@ def distance_matrix(X):
     return squareform(condensed)
 
 
-def central_point(distances):
+def equidistant_point(distances):
     """Return the index of an equidistant point, and the distance
 
     Parameters:
@@ -83,7 +83,7 @@ def central_point(distances):
     size_distances = np.shape(distances)[0]
     for c in range(size_distances):
         unique_distances, occurences = np.unique(distances[:,c], return_counts=True)
-        is_equidistant = np.array(occurences) == 2 #check if the point is equidistant between two other numbers
+        is_equidistant = np.array(occurences) >= 2 #check if the point is equidistant between two other numbers
         if any(is_equidistant):
             return c, unique_distances[is_equidistant]
 
@@ -91,27 +91,71 @@ def central_point(distances):
     return NO_MATCH, 0 #default return
 
 
+def check_distance_value(edist):
+    """Check if the distance is the expected value"""
+
+    if edist != SEPARATION: #check if the distance is the expected value
+        raise ValueError("Distance are supposed to be equal", edist, SEPARATION)
+
+    return None
+
+def triple_equidistant(permutations):
+    """Return a triple of equidistant points among the list
+
+    Parameters:
+    ----------
+    permutations: list
+        list of all permutations for a given set of digits
+    """
+
+    distances = distance_matrix(permutations)
+    icenter, edist = equidistant_point(distances)
+    if icenter != NO_MATCH:
+        check_distance_value(edist)
+        center = permutations[icenter]
+        left = center - SEPARATION
+        right = center + SEPARATION
+        return left, center, right
+    else:
+        return NO_MATCH
 
 
 
+def range_values(x):
+    """Return the range of values"""
 
-for n in xrange(10**(ndigits-1),10**ndigits):
-    if not unique_digit(n) or not is_prime(n):
+    try:
+        return np.max(permutations) - np.min(permutations)
+    except ValueError:
+        return 0
+
+
+for n in xrange(10**(NDIGITS-1),10**NDIGITS):
+    if not unique_digit(n): #easy discard
         continue
     else:
-        permutations = keep_prime(int_permutations(n, ndigits)) #remove non prime numbers
-        if len(permutations) < 3: #reject if number of combinations is too low
+        permutations = keep_prime(int_permutations(n)) #remove non prime numbers among permutations
+        max_diff = range_values(permutations)
+        if len(permutations) < 3 or max_diff < SEPARATION*2:
             continue
         else:
             distances = distance_matrix(permutations)
-            index, edist = central_point(distances)
-            if index != NO_MATCH and not n in KNOWN_MATCH:
-                print n, index, edist
+            a,b = equidistant_point(distances)
+            if a != NO_MATCH:
+                print n,a,b
+            #results = triple_equidistant(permutations)
+            #print n, permutations, results  
+            #if results != NO_MATCH:
+            #    print results
+
+
 
 
             
 
         
+
+
 
 
 
