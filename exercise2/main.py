@@ -144,29 +144,3 @@ for n in xrange(10**(NDIGITS-1),10**NDIGITS):
         print triple_equidistant(permutations)
         break #as soon as I find one, I can exit
 
-
-
-
-            
-
-        
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
