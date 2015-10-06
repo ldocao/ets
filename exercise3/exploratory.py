@@ -16,21 +16,28 @@ for diet in list_df:
     mean_time = diet.mean(axis=1).plot(label="Diet"+str(np.unique(diet["Diet"])))
 
 plt.legend()
-plt.show()
+plt.savefig("mean.pdf")
 
 
 
-
+plt.figure()    
 for diet in list_df:
+    diet_string = str(np.unique(diet["Diet"])[0])
+    diet.to_csv("chicken_weights_"+diet_string+".csv")
     weights_colnames = list(diet.columns.values)
     weights_colnames.remove('Diet')
     diet = diet.reset_index()
+    plt.figure()
+    ax = diet.plot(kind="scatter", x="Time", y=0) 
+    ax.set_ylim([0,400])
+    ax.set_xlim([0,25])
+    ax.set_ylabel("Weight")
+
     for weight in weights_colnames:
-        print weight
-        try:
-            diet.plot(kind="scatter", x="Time", y=weight, ax=ax)
-        except NameError:
-            ax = diet.plot(kind="scatter", x="Time", y=weight)
-    plt.show()
+        print weight, diet["Diet"]
+        diet.plot(kind="scatter", x="Time", y=weight, ax=ax)
+
+
+    plt.savefig("scatter_"+diet_string+".pdf")
 
 
