@@ -8,6 +8,7 @@ def load_dataset(csvfile):
     df = df[["Weight","Time", "Chick", "Diet"]]
     return df
 
+
 def separate_diet(df):
     """Return a list of data frame separated by diet"""
     df_separated_by_diet = []

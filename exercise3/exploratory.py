@@ -21,5 +21,16 @@ plt.show()
 
 
 
+for diet in list_df:
+    weights_colnames = list(diet.columns.values)
+    weights_colnames.remove('Diet')
+    diet = diet.reset_index()
+    for weight in weights_colnames:
+        print weight
+        try:
+            diet.plot(kind="scatter", x="Time", y=weight, ax=ax)
+        except NameError:
+            ax = diet.plot(kind="scatter", x="Time", y=weight)
+    plt.show()
 
 
