@@ -37,7 +37,7 @@ df["Time"] = x #replace time by float for plot
 nx = len(x)
 final_x = x[nx-1] + np.timedelta64(1, "D") / unit #time we want to predict the prices at
 for price in prices_colname:
-    print "For :", price
+    print "=== For :", price
     y = df[price].values
     df.plot(kind="Scatter", x="Time", y=price)
 
@@ -47,6 +47,7 @@ for price in prices_colname:
     xx = np.linspace(np.min(x),np.max(x), 100)
     yy = results[1] + results[0]*xx ##linear regression
     final_y = results[1] + results[0]*final_x
+    print "Prediction (method1) :", final_y
     plt.plot(xx, yy, color="k")
     plt.plot(final_x, final_y, "k*")
 
@@ -62,6 +63,7 @@ for price in prices_colname:
     last_y = y[nx-nfit:nx]
     results = np.polyfit(last_x, last_y, 1)
     final_y = results[1] + results[0]*final_x
+    print "prediction (method2) :", final_y
     plt.plot(final_x, final_y, "r*")
     plt.xlabel("Time [days]")
     plt.savefig("question4_"+price+".pdf")
