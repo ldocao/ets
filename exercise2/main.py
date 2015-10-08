@@ -1,4 +1,3 @@
-from prime_number import is_prime
 import itertools
 import numpy as np
 import ipdb
