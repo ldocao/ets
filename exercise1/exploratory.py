@@ -15,11 +15,3 @@ df.plot(x="Time")
 plt.show()
 
 
-
-##question1
-##compute the difference between 1s jan and 31st december, in absolute value
-t0 = pd.Timestamp(np.datetime64('2003-01-01T01:00:00')) #add 1h to be midnight in UTC, to be used if you are in UTC+1 !
-t1 = pd.Timestamp(np.datetime64("2003-12-31T01:00:00"))
-begin = df[df["Time"] == t0]
-end =  df[df["Time"] == t1]
-profit = end.iloc[0] - begin.iloc[0]
