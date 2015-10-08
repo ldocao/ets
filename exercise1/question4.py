@@ -20,41 +20,48 @@ df = df.dropna()
 
 
 ##question4
-##making a prediction requires to go through feature engineering, gathering and mining data, to learn and make a prediction. However, here, with this dataset only, there is no way we can learn from the data. I could go and look for some additional data, but I have no idea which stock the prices are about, nor if there are even real. So i will go for the three most simple models I can make, ie : random walk, linear regression, and smooth curve (linear on 5 points).
+##making a prediction requires to go through feature engineering, gathering and mining data, to learn and make a prediction. However, here, with this dataset only, there is no way we can learn from the data. I could go and look for some additional data, but I have no idea which stock the prices are about, nor if there are even real. So i will go for the two most simple models I can make, ie : linear regression, and smooth curve (linear on 5 points). bsically, the random walk and linear regression depends on the whole timeline whereas the smooth curve depends only on the last N points.
 
 
 
-def linear_line(x, y, n=100):
-    """Return a linear fit of y(x) with n points"""
 
-    results = np.polyfit(x, y, 1)
-    xx = np.linspace(np.min(x),np.max(x), n)
-    yy = results[1] + results[0]*xx ##linear regression
-    return xx, yy
 
 
 ## linear regression
 prices_colname = ["Price1", "Price2", "Price3", "Price4", "Price5"]
 time = df["Time"]
 t0 = time.values[0]
-x = ((time - t0)/np.timedelta64(1, 'm')).values #convert in minutes for fit
+unit = np.timedelta64(1, 'D') #unit of time is minutes
+x = ((time - t0) / unit).values #convert in minutes for fit
 df["Time"] = x #replace time by float for plot
-
+nx = len(x)
+final_x = x[nx-1] + np.timedelta64(1, "D") / unit #time we want to predict the prices at
 for price in prices_colname:
-    y = df[price].values
     print "For :", price
+    y = df[price].values
     df.plot(kind="Scatter", x="Time", y=price)
 
 
     ##linear regression
-    xx, yy = linear_line(x,y)
-    plt.plot(xx,yy)
+    results = np.polyfit(x, y, 1)
+    xx = np.linspace(np.min(x),np.max(x), 100)
+    yy = results[1] + results[0]*xx ##linear regression
+    final_y = results[1] + results[0]*final_x
+    plt.plot(xx, yy, color="k")
+    plt.plot(final_x, final_y, "k*")
 
     ##smoothing curve, linear extrapolation on last 5 points
-    xx = savgol_filter(x, 5, 1)
-    yy = savgol_filter(y, 5, 1)
-    size_x = len(x)
-    plt.plot(xx, yy, "g", linewidth=3,alpha=0.5)
+    ###first plot the smooth curve
+    nfit = 5
+    xx = savgol_filter(x, nfit, 1)
+    yy = savgol_filter(y, nfit, 1)
+    plt.plot(xx, yy, "r", linewidth=3,alpha=0.5)
 
-
-    plt.show()
+    ###add final point
+    last_x = x[nx-nfit:nx]
+    last_y = y[nx-nfit:nx]
+    results = np.polyfit(last_x, last_y, 1)
+    final_y = results[1] + results[0]*final_x
+    plt.plot(final_x, final_y, "r*")
+    plt.xlabel("Time [days]")
+    plt.savefig("question4_"+price+".pdf")
